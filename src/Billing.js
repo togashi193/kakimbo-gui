@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useMappedState } from 'redux-react-hook';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -27,12 +27,13 @@ const Billing = () => {
   const { currentUser } = useMappedState(mapState);
 
   const [date, setDate] = useState("2019-05-01")
-  const [game, setGame] = useState(1)
-  const [amount, setAmount] = useState(5400)
-  const [note, setNote] = useState("ensta")
+  const [gameId, setGameId] = useState(1)
+  const [amount, setAmount] = useState(0)
+  const [note, setNote] = useState("")
+  const [games, setGames] = useState([])
 
   const handleButtonClick = async () => {
-    const params = { amount: amount, note: note, date: date, game: game }
+    const params = { amount: amount, note: note, date: date, game: gameId }
     const client = ApiClient.instance;
     const response = await client.createBilling(params);
     if (response.ok) {
@@ -45,7 +46,7 @@ const Billing = () => {
   };
 
   const handleGameChange = event => {
-    setGame(event.target.value);
+    setGameId(event.target.value);
   };
 
   const handleAmountChange = event => {
@@ -55,6 +56,20 @@ const Billing = () => {
   const handleNoteChange = event => {
     setNote(event.target.value);
   };
+
+  useEffect(() => {
+    fetchGames();
+  }, []);
+
+  const fetchGames = useCallback(async () => {
+    const client = ApiClient.instance;
+    const response = await client.fetchGames();
+    if (response.ok) {
+      const json = await response.json();
+      console.log(json);
+      setGames(json);
+    }
+  });
 
   return (
     <div className="App">
@@ -91,16 +106,17 @@ const Billing = () => {
               >ゲーム名</InputLabel>
               <Select
                 fullWidth
-                value={game}
+                value={gameId}
                 onChange={handleGameChange}
                 inputProps={{
                   name: 'age',
                   id: 'age-simple',
                 }}
               >
-                <MenuItem value={1}>Ten</MenuItem>
-                <MenuItem value={2}>Twenty</MenuItem>
-                <MenuItem value={3}>Thirty</MenuItem>
+
+                {games.map(game => (
+                  <MenuItem value={game.id}>{game.name}</MenuItem>
+                ))}
               </Select>
             </div>
 

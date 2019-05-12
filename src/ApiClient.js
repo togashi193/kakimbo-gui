@@ -27,6 +27,10 @@ class ApiClient {
   async createBilling(params) {
     return await this.callApi('/billings', 'POST', params);
   }
+
+  async fetchGames() {
+    return await this.callApi('/games', 'GET');
+  }
 }
 
 ApiClient.instance = new ApiClient();
