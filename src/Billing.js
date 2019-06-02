@@ -7,6 +7,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
+
+import { Link } from 'react-router-dom';
 import ApiClient from './ApiClient';
 
 const styles = {
@@ -17,7 +19,6 @@ const styles = {
 };
 
 const Billing = () => {
-
   const mapState = useCallback(
     state => ({
       currentUser: state.app.currentUser
@@ -26,20 +27,20 @@ const Billing = () => {
   );
   const { currentUser } = useMappedState(mapState);
 
-  const [date, setDate] = useState("2019-05-01")
-  const [gameId, setGameId] = useState(1)
-  const [amount, setAmount] = useState(0)
-  const [note, setNote] = useState("")
-  const [games, setGames] = useState([])
+  const [date, setDate] = useState('2019-05-01');
+  const [gameId, setGameId] = useState(1);
+  const [amount, setAmount] = useState(0);
+  const [note, setNote] = useState('');
+  const [games, setGames] = useState([]);
 
   const handleButtonClick = async () => {
-    const params = { amount: amount, note: note, date: date, game: gameId }
+    const params = { amount: amount, note: note, date: date, game: gameId };
     const client = ApiClient.instance;
     const response = await client.createBilling(params);
     if (response.ok) {
       const json = await response.json();
     }
-  }
+  };
 
   const handleDateChange = event => {
     setDate(event.target.value);
@@ -73,13 +74,10 @@ const Billing = () => {
 
   return (
     <div className="App">
-
       <header>{currentUser.displayName}</header>
 
       <main>
-        <div>
-          課金簿
-        </div>
+        <div>課金簿</div>
 
         <Card style={styles.card}>
           <CardContent>
@@ -90,7 +88,7 @@ const Billing = () => {
                 type="date"
                 defaultValue="2019-05-01"
                 InputLabelProps={{
-                  shrink: true,
+                  shrink: true
                 }}
                 onChange={handleDateChange}
               />
@@ -103,17 +101,18 @@ const Billing = () => {
                   margin: 'auto',
                   width: '50%'
                 }}
-              >ゲーム名</InputLabel>
+              >
+                ゲーム名
+              </InputLabel>
               <Select
                 fullWidth
                 value={gameId}
                 onChange={handleGameChange}
                 inputProps={{
                   name: 'age',
-                  id: 'age-simple',
+                  id: 'age-simple'
                 }}
               >
-
                 {games.map(game => (
                   <MenuItem value={game.id}>{game.name}</MenuItem>
                 ))}
@@ -137,17 +136,21 @@ const Billing = () => {
                 onChange={handleNoteChange}
               />
             </div>
-            <Button variant="contained" color="primary" onClick={handleButtonClick}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleButtonClick}
+            >
               送信
+            </Button>
+            <Button color="primary" component={Link} to="/billings">
+              一覧
             </Button>
           </CardContent>
         </Card>
-
-
       </main>
-
-    </div >
+    </div>
   );
-}
+};
 
 export default Billing;

@@ -1,16 +1,14 @@
 import React, { useEffect, useCallback } from 'react';
 import { useDispatch } from 'redux-react-hook';
-import './App.css';
-import Routes from './Routes'
-import { Router } from "react-router";
-import { createBrowserHistory } from "history";
+import Routes from './Routes';
+import { Router } from 'react-router';
+import { createBrowserHistory } from 'history';
 import firebase from 'firebase';
 import getUser from './actions/getUser';
 
-const history = createBrowserHistory()
+const history = createBrowserHistory();
 
 const App = () => {
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -20,14 +18,16 @@ const App = () => {
   const initUser = useCallback(async () => {
     firebase.auth().onAuthStateChanged(async user => {
       if (user) {
-        dispatch(getUser(user))
+        dispatch(getUser(user));
       }
     });
   });
 
   return (
-    <Router history={history}><Routes /></Router>
-  )
-}
+    <Router history={history}>
+      <Routes />
+    </Router>
+  );
+};
 
 export default App;
