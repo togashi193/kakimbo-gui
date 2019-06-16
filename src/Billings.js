@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { useMappedState } from 'redux-react-hook';
+import { useMappedState, useDispatch } from 'redux-react-hook';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import List from '@material-ui/core/List';
@@ -18,6 +18,8 @@ import AddIcon from '@material-ui/icons/Add';
 import ApiClient from './ApiClient';
 import 'moment/locale/ja';
 import moment from 'moment';
+import BillingFormDialog from './BillingFormDialog';
+import openBillingFormDialog from './actions/openBillingFormDialog';
 
 const styles = {
   card: {
@@ -27,6 +29,8 @@ const styles = {
 };
 
 const Billing = () => {
+  const dispatch = useDispatch();
+
   const mapState = useCallback(
     state => ({
       currentUser: state.app.currentUser
@@ -96,12 +100,18 @@ const Billing = () => {
     return moment(billing.date, 'YYYY-MM-DDThh:mm:ss.SSSZ').format('LL');
   };
 
+  const handleClickOpen = () => {
+    dispatch(openBillingFormDialog());
+  };
+
   return (
     <div className="App">
       <header>{currentUser.displayName}</header>
 
       <main>
         <div>課金簿</div>
+
+        <BillingFormDialog />
 
         <Card style={styles.card}>
           <CardContent>
@@ -135,7 +145,12 @@ const Billing = () => {
           </CardContent>
         </Card>
 
-        <Fab size="medium" color="secondary" aria-label="Add">
+        <Fab
+          size="medium"
+          color="secondary"
+          aria-label="Add"
+          onClick={handleClickOpen}
+        >
           <AddIcon />
         </Fab>
       </main>
