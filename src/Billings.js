@@ -127,8 +127,10 @@ const Billing = () => {
                   <ListItemText
                     primary={
                       <React.Fragment>
-                        <Typography>{billing.amount} 円</Typography>-{' '}
-                        {billing.game_name}
+                        <Typography>
+                          {billing.amount} 円 ({billing.note})
+                        </Typography>
+                        - {billing.game_name}
                       </React.Fragment>
                     }
                     secondary={formatDate(billing)}
