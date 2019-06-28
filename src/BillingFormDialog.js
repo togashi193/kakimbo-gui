@@ -1,7 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useMappedState, useDispatch } from 'redux-react-hook';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
@@ -10,12 +8,10 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import 'moment/locale/ja';
 import moment from 'moment';
 
-import { Link } from 'react-router-dom';
 import ApiClient from './ApiClient';
 import closeBillingFormDialog from './actions/closeBillingFormDialog';
 
@@ -63,10 +59,6 @@ const BillingFormDialog = () => {
     setNote(event.target.value);
   };
 
-  useEffect(() => {
-    fetchGames();
-  }, []);
-
   const fetchGames = useCallback(async () => {
     const client = ApiClient.instance;
     const response = await client.fetchGames();
@@ -76,6 +68,10 @@ const BillingFormDialog = () => {
       setGames(json);
     }
   });
+
+  useEffect(() => {
+    fetchGames();
+  }, []);
 
   const handleClose = event => {
     dispatch(closeBillingFormDialog());

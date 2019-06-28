@@ -11,10 +11,6 @@ const history = createBrowserHistory();
 const App = () => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    initUser();
-  }, []);
-
   const initUser = useCallback(async () => {
     firebase.auth().onAuthStateChanged(async user => {
       if (user) {
@@ -22,6 +18,10 @@ const App = () => {
       }
     });
   });
+
+  useEffect(() => {
+    initUser();
+  }, []);
 
   return (
     <Router history={history}>
