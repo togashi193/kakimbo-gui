@@ -106,7 +106,7 @@ const Billing = () => {
 
   return (
     <div className="App">
-      <header>{currentUser.displayName}</header>
+      <header>ようこそ{currentUser.displayName}さん</header>
 
       <main>
         <div>課金簿</div>
