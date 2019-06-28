@@ -12,6 +12,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import 'moment/locale/ja';
+import moment from 'moment';
 
 import { Link } from 'react-router-dom';
 import ApiClient from './ApiClient';
@@ -94,7 +96,7 @@ const BillingFormDialog = () => {
               fullWidth
               label="課金日"
               type="date"
-              defaultValue="2019-05-01"
+              defaultValue={moment().format('YYYY-MM-DD')}
               InputLabelProps={{
                 shrink: true
               }}
