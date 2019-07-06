@@ -19,6 +19,12 @@ import 'moment/locale/ja';
 import moment from 'moment';
 import BillingFormDialog from './BillingFormDialog';
 import openBillingFormDialog from './actions/openBillingFormDialog';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const styles = {
   card: {
@@ -39,6 +45,7 @@ const Billing = () => {
   const { currentUser } = useMappedState(mapState);
 
   const [billings, setBillings] = useState([]);
+  const [open, setOpen] = useState(false);
 
   const fetchBillings = useCallback(async () => {
     const client = ApiClient.instance;
@@ -61,6 +68,14 @@ const Billing = () => {
   const handleClickOpen = () => {
     dispatch(openBillingFormDialog());
   };
+
+  function handleClickDeleteDialogOpen() {
+    setOpen(true);
+  }
+
+  function handleCloseDeleteDialog() {
+    setOpen(false);
+  }
 
   return (
     <div className="App">
@@ -95,7 +110,10 @@ const Billing = () => {
                   />
 
                   <ListItemSecondaryAction>
-                    <IconButton aria-label="Delete">
+                    <IconButton
+                      aria-label="Delete"
+                      onClick={handleClickDeleteDialogOpen}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </ListItemSecondaryAction>
@@ -113,6 +131,28 @@ const Billing = () => {
         >
           <AddIcon />
         </Fab>
+
+        <Dialog
+          open={open}
+          onClose={handleCloseDeleteDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{'確認'}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              この履歴を本当に削除しますか？
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDeleteDialog} color="primary">
+              キャンセル
+            </Button>
+            <Button onClick={handleCloseDeleteDialog} color="primary">
+              削除
+            </Button>
+          </DialogActions>
+        </Dialog>
       </main>
     </div>
   );
