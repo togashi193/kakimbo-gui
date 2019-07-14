@@ -28,6 +28,10 @@ class ApiClient {
     return await this.callApi('/billings', 'POST', params);
   }
 
+  async deleteBilling(id) {
+    return await this.callApi(`/billings/${id}`, 'DELETE');
+  }
+
   async fetchGames() {
     return await this.callApi('/games', 'GET');
   }

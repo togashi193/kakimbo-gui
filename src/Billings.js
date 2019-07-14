@@ -47,6 +47,8 @@ const Billing = () => {
   const [billings, setBillings] = useState([]);
   const [open, setOpen] = useState(false);
 
+  const [currentBilling, setCurrentBilling] = useState(undefined);
+
   const fetchBillings = useCallback(async () => {
     const client = ApiClient.instance;
     const response = await client.fetchBillings();
@@ -69,13 +71,26 @@ const Billing = () => {
     dispatch(openBillingFormDialog());
   };
 
-  function handleClickDeleteDialogOpen() {
+  const handleClickDeleteDialogOpen = billing => {
     setOpen(true);
-  }
+    setCurrentBilling(billing);
+  };
 
-  function handleCloseDeleteDialog() {
+  const handleCloseDeleteDialog = () => {
     setOpen(false);
-  }
+  };
+
+  const handleDeleteButtonClick = async () => {
+    const client = ApiClient.instance;
+    const response = await client.deleteBilling(currentBilling.id);
+    if (response.ok) {
+      setOpen(false);
+      const rejected = billings.filter(
+        billing => billing.id !== currentBilling.id
+      );
+      setBillings(rejected);
+    }
+  };
 
   return (
     <div className="App">
@@ -112,7 +127,7 @@ const Billing = () => {
                   <ListItemSecondaryAction>
                     <IconButton
                       aria-label="Delete"
-                      onClick={handleClickDeleteDialogOpen}
+                      onClick={() => handleClickDeleteDialogOpen(billing)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -148,7 +163,7 @@ const Billing = () => {
             <Button onClick={handleCloseDeleteDialog} color="primary">
               キャンセル
             </Button>
-            <Button onClick={handleCloseDeleteDialog} color="primary">
+            <Button onClick={handleDeleteButtonClick} color="primary">
               削除
             </Button>
           </DialogActions>
