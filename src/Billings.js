@@ -19,6 +19,8 @@ import 'moment/locale/ja';
 import moment from 'moment';
 import BillingFormDialog from './BillingFormDialog';
 import openBillingFormDialog from './actions/openBillingFormDialog';
+import fetchBillings from './actions/fetchBillings';
+import deleteBilling from './actions/deleteBilling';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -38,29 +40,29 @@ const Billing = () => {
 
   const mapState = useCallback(
     state => ({
-      currentUser: state.app.currentUser
+      currentUser: state.app.currentUser,
+      billings: state.app.billings
     }),
     []
   );
-  const { currentUser } = useMappedState(mapState);
+  const { currentUser, billings } = useMappedState(mapState);
 
-  const [billings, setBillings] = useState([]);
   const [open, setOpen] = useState(false);
 
   const [currentBilling, setCurrentBilling] = useState(undefined);
 
-  const fetchBillings = useCallback(async () => {
+  const refreshBillings = useCallback(async () => {
     const client = ApiClient.instance;
     const response = await client.fetchBillings();
     if (response.ok) {
       const json = await response.json();
       console.log(json);
-      setBillings(json);
+      dispatch(fetchBillings(json));
     }
   });
 
   useEffect(() => {
-    fetchBillings();
+    refreshBillings();
   }, []);
 
   const formatDate = billing => {
@@ -85,10 +87,7 @@ const Billing = () => {
     const response = await client.deleteBilling(currentBilling.id);
     if (response.ok) {
       setOpen(false);
-      const rejected = billings.filter(
-        billing => billing.id !== currentBilling.id
-      );
-      setBillings(rejected);
+      dispatch(deleteBilling(currentBilling.id));
     }
   };
 

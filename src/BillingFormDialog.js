@@ -14,6 +14,7 @@ import moment from 'moment';
 
 import ApiClient from './ApiClient';
 import closeBillingFormDialog from './actions/closeBillingFormDialog';
+import createBilling from './actions/createBilling';
 
 const BillingFormDialog = () => {
   const dispatch = useDispatch();
@@ -40,6 +41,7 @@ const BillingFormDialog = () => {
     if (response.ok) {
       const json = await response.json();
       dispatch(closeBillingFormDialog());
+      dispatch(createBilling(json));
     }
   };
 
