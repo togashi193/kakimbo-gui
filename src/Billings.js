@@ -52,6 +52,7 @@ const Billing = () => {
 
   const refreshBillings = useCallback(async () => {
     const client = ApiClient.instance;
+    client.token = await firebase.auth().currentUser.getIdToken();
     const response = await client.fetchBillings();
     if (response.ok) {
       const json = await response.json();
@@ -83,6 +84,7 @@ const Billing = () => {
 
   const handleDeleteButtonClick = async () => {
     const client = ApiClient.instance;
+    client.token = await firebase.auth().currentUser.getIdToken();
     const response = await client.deleteBilling(currentBilling.id);
     if (response.ok) {
       setOpen(false);

@@ -15,6 +15,8 @@ import moment from 'moment';
 import ApiClient from './ApiClient';
 import closeBillingFormDialog from './actions/closeBillingFormDialog';
 import createBilling from './actions/createBilling';
+import firebase from 'firebase/app';
+import '@firebase/auth';
 
 const BillingFormDialog = () => {
   const dispatch = useDispatch();
@@ -37,6 +39,7 @@ const BillingFormDialog = () => {
   const handleButtonClick = async () => {
     const params = { amount: amount, note: note, date: date, game: gameId };
     const client = ApiClient.instance;
+    client.token = await firebase.auth().currentUser.getIdToken();
     const response = await client.createBilling(params);
     if (response.ok) {
       const json = await response.json();
@@ -63,6 +66,7 @@ const BillingFormDialog = () => {
 
   const fetchGames = useCallback(async () => {
     const client = ApiClient.instance;
+    client.token = await firebase.auth().currentUser.getIdToken();
     const response = await client.fetchGames();
     if (response.ok) {
       const json = await response.json();

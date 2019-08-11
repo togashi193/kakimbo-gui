@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { StoreContext } from 'redux-react-hook';
 import { createLogger } from 'redux-logger';
@@ -33,7 +33,12 @@ const reducer = combineReducers({
 
 const store = compose(applyMiddleware(...middlewares))(createStore)(reducer);
 
-ReactDOM.render(<StoreContext.Provider value={store}><App /></StoreContext.Provider>, document.getElementById('root'));
+ReactDOM.render(
+  <StoreContext.Provider value={store}>
+    <App />
+  </StoreContext.Provider>,
+  document.getElementById('root')
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
