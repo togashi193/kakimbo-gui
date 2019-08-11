@@ -40,12 +40,11 @@ const Billing = () => {
 
   const mapState = useCallback(
     state => ({
-      currentUser: state.app.currentUser,
       billings: state.app.billings
     }),
     []
   );
-  const { currentUser, billings } = useMappedState(mapState);
+  const { billings } = useMappedState(mapState);
 
   const [open, setOpen] = useState(false);
 
@@ -93,11 +92,7 @@ const Billing = () => {
 
   return (
     <div className="App">
-      <header>ようこそ{currentUser.displayName}さん</header>
-
       <main>
-        <div>課金簿</div>
-
         <BillingFormDialog />
 
         <Card style={styles.card}>
