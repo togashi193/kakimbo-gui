@@ -27,11 +27,18 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import firebase from 'firebase/app';
+import '@firebase/auth';
 
 const styles = {
   card: {
     width: 512,
     height: 512
+  },
+  add: {
+    position: 'fixed',
+    right: '32px',
+    bottom: '32px'
   }
 };
 
@@ -99,38 +106,42 @@ const Billing = () => {
 
         <Card style={styles.card}>
           <CardContent>
-            <List>
-              {billings.map(billing => (
-                <ListItem key={billing.id}>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <FolderIcon />
-                    </Avatar>
-                  </ListItemAvatar>
+            {billings.length < 1 ? (
+              <div>なにもないよ！</div>
+            ) : (
+              <List>
+                {billings.map(billing => (
+                  <ListItem key={billing.id}>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <FolderIcon />
+                      </Avatar>
+                    </ListItemAvatar>
 
-                  <ListItemText
-                    primary={
-                      <React.Fragment>
-                        <Typography>
-                          {billing.amount} 円 ({billing.note})
-                        </Typography>
-                        - {billing.game_name}
-                      </React.Fragment>
-                    }
-                    secondary={formatDate(billing)}
-                  />
+                    <ListItemText
+                      primary={
+                        <React.Fragment>
+                          <Typography>
+                            {billing.amount} 円 ({billing.note})
+                          </Typography>
+                          - {billing.game_name}
+                        </React.Fragment>
+                      }
+                      secondary={formatDate(billing)}
+                    />
 
-                  <ListItemSecondaryAction>
-                    <IconButton
-                      aria-label="Delete"
-                      onClick={() => handleClickDeleteDialogOpen(billing)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              ))}
-            </List>
+                    <ListItemSecondaryAction>
+                      <IconButton
+                        aria-label="Delete"
+                        onClick={() => handleClickDeleteDialogOpen(billing)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))}
+              </List>
+            )}
           </CardContent>
         </Card>
 
@@ -139,6 +150,7 @@ const Billing = () => {
           color="secondary"
           aria-label="Add"
           onClick={handleClickOpen}
+          style={styles.add}
         >
           <AddIcon />
         </Fab>
