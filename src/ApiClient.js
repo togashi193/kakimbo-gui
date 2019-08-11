@@ -2,17 +2,25 @@ class ApiClient {
   constructor() {
     this.basePath = `http://localhost:4000`;
 
+    this.token = undefined;
+
     this.defaultOpts = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      method: 'GET'
+    };
+
+    this.defaultHeaders = {
+      'Content-Type': 'application/json'
     };
   }
 
   async callApi(path, httpMethod = 'GET', bodyParams = undefined) {
+    const headers = Object.assign({}, this.defaultHeaders, {
+      Authorization: this.token
+    });
+
     const opts = Object.assign({}, this.defaultOpts, {
-      method: httpMethod
+      method: httpMethod,
+      headers: headers
     });
 
     if (bodyParams) {
