@@ -118,7 +118,9 @@ const BillingFormDialog = () => {
               }}
             >
               {games.map(game => (
-                <MenuItem value={game.id}>{game.name}</MenuItem>
+                <MenuItem value={game.id} key={game.id}>
+                  {game.name}
+                </MenuItem>
               ))}
             </Select>
           </div>
