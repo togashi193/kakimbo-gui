@@ -30,7 +30,7 @@ const BillingFormDialog = () => {
 
   const { billingFormDialogOpen } = useMappedState(mapState);
 
-  const [date, setDate] = useState('2019-05-01');
+  const [date, setDate] = useState(moment().format('YYYY-MM-DD'));
   const [gameId, setGameId] = useState(1);
   const [amount, setAmount] = useState(0);
   const [note, setNote] = useState('');
