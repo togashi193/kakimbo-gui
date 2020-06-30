@@ -1,6 +1,6 @@
 class ApiClient {
   constructor() {
-    this.basePath = `http://localhost:4000`;
+    this.basePath = process.env.REACT_APP_API_ENDPOINT;
 
     this.token = undefined;
 
