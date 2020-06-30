@@ -54,8 +54,8 @@ const Billing = () => {
   const { billings } = useMappedState(mapState);
 
   const [open, setOpen] = useState(false);
-
   const [currentBilling, setCurrentBilling] = useState(undefined);
+  const [total, setTotal] = useState(999999);
 
   const refreshBillings = useCallback(async () => {
     const client = ApiClient.instance;
@@ -66,11 +66,24 @@ const Billing = () => {
       console.log(json);
       dispatch(fetchBillings(json));
     }
-  });
+  }, [dispatch, fetchBillings]);
+
+  const calcTotal = useCallback(async () => {
+    const reducer = (accumulator, currentValue) => accumulator + currentValue;
+    setTotal(billings.map(billing => billing.amount).reduce(reducer))
+  }, [billings]);
 
   useEffect(() => {
     refreshBillings();
   }, []);
+
+  // フック
+  useEffect(() => {
+    // 呼び出す関数
+    if (0 < billings.length){
+      calcTotal();
+    }
+  }, [billings]);
 
   const formatDate = billing => {
     return moment(billing.date, 'YYYY-MM-DDThh:mm:ss.SSSZ').format('LL');
@@ -109,39 +122,42 @@ const Billing = () => {
             {billings.length < 1 ? (
               <div>なにもないよ！</div>
             ) : (
-              <List>
-                {billings.map(billing => (
-                  <ListItem key={billing.id}>
-                    <ListItemAvatar>
-                      <Avatar>
-                        <FolderIcon />
-                      </Avatar>
-                    </ListItemAvatar>
+                <div>
+                  <div>合計額: {total} 円</div>
+                  <List>
+                    {billings.map(billing => (
+                      <ListItem key={billing.id}>
+                        <ListItemAvatar>
+                          <Avatar>
+                            <FolderIcon />
+                          </Avatar>
+                        </ListItemAvatar>
 
-                    <ListItemText
-                      primary={
-                        <React.Fragment>
-                          <Typography>
-                            {billing.amount} 円 ({billing.note})
+                        <ListItemText
+                          primary={
+                            <React.Fragment>
+                              <Typography>
+                                {billing.amount} 円 ({billing.note})
                           </Typography>
-                          - {billing.game_name}
-                        </React.Fragment>
-                      }
-                      secondary={formatDate(billing)}
-                    />
+                              - {billing.game_name}
+                            </React.Fragment>
+                          }
+                          secondary={formatDate(billing)}
+                        />
 
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        aria-label="Delete"
-                        onClick={() => handleClickDeleteDialogOpen(billing)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
-              </List>
-            )}
+                        <ListItemSecondaryAction>
+                          <IconButton
+                            aria-label="Delete"
+                            onClick={() => handleClickDeleteDialogOpen(billing)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    ))}
+                  </List>
+                </div>
+              )}
           </CardContent>
         </Card>
 
