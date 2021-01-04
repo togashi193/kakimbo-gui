@@ -1,17 +1,11 @@
-import React, { useCallback } from 'react';
-import { useMappedState } from 'redux-react-hook';
+import React, { useContext } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Login from './Login';
 import Billings from './Billings';
+import AuthContext from './context/AuthContext';
 
 const Routes = () => {
-  const mapState = useCallback(
-    state => ({
-      currentUser: state.app.currentUser
-    }),
-    []
-  );
-  const { currentUser } = useMappedState(mapState);
+  const { currentUser } = useContext(AuthContext);
 
   return (
     <Switch>

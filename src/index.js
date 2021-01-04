@@ -4,10 +4,6 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import firebase from 'firebase/app';
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import { StoreContext } from 'redux-react-hook';
-import { createLogger } from 'redux-logger';
-import appReducer from './reducers/appReducer';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -20,23 +16,8 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
-const middlewares = [];
-
-if (process.env.NODE_ENV !== 'production') {
-  const logger = createLogger();
-  middlewares.push(logger);
-}
-
-const reducer = combineReducers({
-  app: appReducer
-});
-
-const store = compose(applyMiddleware(...middlewares))(createStore)(reducer);
-
 ReactDOM.render(
-  <StoreContext.Provider value={store}>
-    <App />
-  </StoreContext.Provider>,
+  <App />,
   document.getElementById('root')
 );
 

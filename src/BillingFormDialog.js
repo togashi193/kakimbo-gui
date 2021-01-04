@@ -1,5 +1,4 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { useMappedState, useDispatch } from 'redux-react-hook';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
@@ -13,22 +12,11 @@ import 'moment/locale/ja';
 import moment from 'moment';
 
 import ApiClient from './ApiClient';
-import closeBillingFormDialog from './actions/closeBillingFormDialog';
-import createBilling from './actions/createBilling';
 import firebase from 'firebase/app';
 import '@firebase/auth';
 
-const BillingFormDialog = () => {
-  const dispatch = useDispatch();
-
-  const mapState = useCallback(
-    state => ({
-      billingFormDialogOpen: state.app.billingFormDialogOpen
-    }),
-    []
-  );
-
-  const { billingFormDialogOpen } = useMappedState(mapState);
+const BillingFormDialog = props => {
+  const { open, onClose, onCreate } = props;
 
   const [date, setDate] = useState(moment().format('YYYY-MM-DD'));
   const [gameId, setGameId] = useState(1);
@@ -43,8 +31,8 @@ const BillingFormDialog = () => {
     const response = await client.createBilling(params);
     if (response.ok) {
       const json = await response.json();
-      dispatch(closeBillingFormDialog());
-      dispatch(createBilling(json));
+      onCreate(json);
+      onClose()
     }
   };
 
@@ -70,7 +58,6 @@ const BillingFormDialog = () => {
     const response = await client.fetchGames();
     if (response.ok) {
       const json = await response.json();
-      console.log(json);
       setGames(json);
     }
   });

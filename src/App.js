@@ -1,16 +1,14 @@
-import React, { useEffect, useCallback } from 'react';
-import { useMappedState, useDispatch } from 'redux-react-hook';
+import React, { useEffect, useCallback, useState } from 'react';
 import Routes from './Routes';
 import { Router } from 'react-router';
 import { createBrowserHistory } from 'history';
 import firebase from 'firebase/app';
 import '@firebase/auth';
-import getUser from './actions/getUser';
-import signOut from './actions/signOut';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import AuthContext from './context/AuthContext';
 
 const styles = {
   right: {
@@ -25,25 +23,19 @@ const styles = {
 const history = createBrowserHistory();
 
 const App = () => {
-  const dispatch = useDispatch();
-
-  const mapState = useCallback(
-    state => ({
-      currentUser: state.app.currentUser,
-      initializing: state.app.initializing
-    }),
-    []
-  );
-  const { currentUser, initializing } = useMappedState(mapState);
+  const [currentUser, setCurrentUser] = useState(undefined);
+  const [loading, setLoading] = useState(true);
 
   const initUser = useCallback(async () => {
     firebase.auth().onAuthStateChanged(async user => {
       // ログイン検知
       if (user) {
-        dispatch(getUser(user));
+        setCurrentUser(user);
       } else {
-        dispatch(signOut());
+        // ログアウトした時
+        setCurrentUser(undefined);
       }
+      setLoading(false);
     });
   });
 
@@ -53,12 +45,17 @@ const App = () => {
 
   const handleSignOutClick = useCallback(async () => {
     await firebase.auth().signOut();
-    dispatch(signOut());
+    setCurrentUser(undefined);
     history.push('/login');
   });
 
   return (
-    <div>
+    <AuthContext.Provider
+      value={{
+        currentUser: currentUser,
+        setCurrentUser: setCurrentUser
+      }}
+    >
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6">課金簿</Typography>
@@ -74,12 +71,14 @@ const App = () => {
           </div>
         </Toolbar>
       </AppBar>
-      {!initializing && (
-        <Router history={history}>
-          <Routes />
-        </Router>
-      )}
-    </div>
+      {
+        !loading && (
+          <Router history={history}>
+            <Routes />
+          </Router>
+        )
+      }
+    </AuthContext.Provider>
   );
 };
 

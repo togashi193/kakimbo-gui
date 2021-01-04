@@ -1,5 +1,4 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { useMappedState, useDispatch } from 'redux-react-hook';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import List from '@material-ui/core/List';
@@ -19,9 +18,6 @@ import ApiClient from './ApiClient';
 import 'moment/locale/ja';
 import moment from 'moment';
 import BillingFormDialog from './BillingFormDialog';
-import openBillingFormDialog from './actions/openBillingFormDialog';
-import fetchBillings from './actions/fetchBillings';
-import deleteBilling from './actions/deleteBilling';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -43,19 +39,11 @@ const styles = {
 };
 
 const Billing = () => {
-  const dispatch = useDispatch();
-
-  const mapState = useCallback(
-    state => ({
-      billings: state.app.billings
-    }),
-    []
-  );
-  const { billings } = useMappedState(mapState);
-
   const [open, setOpen] = useState(false);
   const [currentBilling, setCurrentBilling] = useState(undefined);
   const [total, setTotal] = useState(999999);
+  const [billings, setBillings] = useState([]);
+  const [openBillingFormDialog, setOpenBillingFormDialog] = useState(false);
 
   const refreshBillings = useCallback(async () => {
     const client = ApiClient.instance;
@@ -63,10 +51,9 @@ const Billing = () => {
     const response = await client.fetchBillings();
     if (response.ok) {
       const json = await response.json();
-      console.log(json);
-      dispatch(fetchBillings(json));
+      setBillings(json);
     }
-  }, [dispatch, fetchBillings]);
+  }, []);
 
   const calcTotal = useCallback(async () => {
     const reducer = (accumulator, currentValue) => accumulator + currentValue;
@@ -89,8 +76,8 @@ const Billing = () => {
     return moment(billing.date, 'YYYY-MM-DDThh:mm:ss.SSSZ').format('LL');
   };
 
-  const handleClickOpen = () => {
-    dispatch(openBillingFormDialog());
+  const handleClickOpen = billing => {
+    setOpenBillingFormDialog(true)
   };
 
   const handleClickDeleteDialogOpen = billing => {
@@ -108,14 +95,30 @@ const Billing = () => {
     const response = await client.deleteBilling(currentBilling.id);
     if (response.ok) {
       setOpen(false);
-      dispatch(deleteBilling(currentBilling.id));
+
+      const rejected = billings.filter(
+        billing => billing.id !== currentBilling.id
+      );
+      setBillings(rejected);
     }
   };
+
+  const handleBillingFormDialogClose = useCallback(() => {
+    setOpenBillingFormDialog(false)
+  }, [])
+
+  const handleCreate = useCallback((billing) => {
+    setBillings([...billings, billing])
+  }, [billings])
 
   return (
     <div className="App">
       <main>
-        <BillingFormDialog />
+        <BillingFormDialog
+          open={openBillingFormDialog}
+          onClose={handleBillingFormDialogClose}
+          onCreate={handleCreate}
+        />
 
         <Card style={styles.card}>
           <CardContent>
@@ -124,6 +127,7 @@ const Billing = () => {
             ) : (
                 <div>
                   <div>合計額: {total} 円</div>
+
                   <List>
                     {billings.map(billing => (
                       <ListItem key={billing.id}>
