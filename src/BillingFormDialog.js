@@ -80,13 +80,13 @@ const BillingFormDialog = () => {
   }, []);
 
   const handleClose = event => {
-    dispatch(closeBillingFormDialog());
+    onClose()
   };
 
   return (
     <div>
       <Dialog
-        open={billingFormDialogOpen}
+        open={open}
         onClose={handleClose}
         fullWidth
         aria-labelledby="form-dialog-title"

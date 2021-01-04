@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
@@ -32,8 +33,7 @@ import '@firebase/auth';
 
 const styles = {
   card: {
-    width: 512,
-    height: 512
+    width: 512
   },
   add: {
     position: 'fixed',
@@ -80,7 +80,7 @@ const Billing = () => {
   // フック
   useEffect(() => {
     // 呼び出す関数
-    if (0 < billings.length){
+    if (0 < billings.length) {
       calcTotal();
     }
   }, [billings]);
@@ -146,6 +146,13 @@ const Billing = () => {
                         />
 
                         <ListItemSecondaryAction>
+                          <IconButton
+                            aria-label="Edit"
+                            onClick={() => handleClickOpen(billing)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+
                           <IconButton
                             aria-label="Delete"
                             onClick={() => handleClickDeleteDialogOpen(billing)}
