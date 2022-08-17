@@ -17,7 +17,8 @@ import AddIcon from '@material-ui/icons/Add';
 import ApiClient from './ApiClient';
 import 'moment/locale/ja';
 import moment from 'moment';
-import BillingFormDialog from './BillingFormDialog';
+import BillingFormDialogNew from './BillingFormDialogNew';
+import BillingFormDialogEdit from './BillingFormDialogEdit';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -43,7 +44,8 @@ const Billing = () => {
   const [currentBilling, setCurrentBilling] = useState(undefined);
   const [total, setTotal] = useState(999999);
   const [billings, setBillings] = useState([]);
-  const [openBillingFormDialog, setOpenBillingFormDialog] = useState(false);
+  const [openBillingFormDialogNew, setOpenBillingFormDialogNew] = useState(false);
+  const [openBillingFormDialogEdit, setOpenBillingFormDialogEdit] = useState(false);
 
   const refreshBillings = useCallback(async () => {
     const client = ApiClient.instance;
@@ -76,8 +78,13 @@ const Billing = () => {
     return moment(billing.date, 'YYYY-MM-DDThh:mm:ss.SSSZ').format('LL');
   };
 
-  const handleClickOpen = billing => {
-    setOpenBillingFormDialog(true)
+  const handleCreateOpen = () => {
+    setOpenBillingFormDialogNew(true)
+  };
+
+  const handleEditOpen = billing => {
+    setCurrentBilling(billing);
+    setOpenBillingFormDialogEdit(true)
   };
 
   const handleClickDeleteDialogOpen = billing => {
@@ -103,21 +110,40 @@ const Billing = () => {
     }
   };
 
-  const handleBillingFormDialogClose = useCallback(() => {
-    setOpenBillingFormDialog(false)
+  const handleBillingFormDialogNewClose = useCallback(() => {
+    setOpenBillingFormDialogNew(false)
+  }, [])
+
+  const handleBillingFormDialogEditClose = useCallback(() => {
+    setOpenBillingFormDialogEdit(false)
   }, [])
 
   const handleCreate = useCallback((billing) => {
+    // ...配列の変数 で要素を展開する
+    // billings.push(billing)を非破壊的にやっている
     setBillings([...billings, billing])
+  }, [billings])
+
+  const handleEdit = useCallback((billing) => {
+    refreshBillings();
   }, [billings])
 
   return (
     <div className="App">
       <main>
-        <BillingFormDialog
-          open={openBillingFormDialog}
-          onClose={handleBillingFormDialogClose}
+        <BillingFormDialogNew
+          open={openBillingFormDialogNew}
+          onClose={handleBillingFormDialogNewClose}
+          // 子に渡すプロパティ名がonCreate
+          // 値がhandleCreate (key-value)
           onCreate={handleCreate}
+        />
+
+        <BillingFormDialogEdit
+          open={openBillingFormDialogEdit}
+          onClose={handleBillingFormDialogEditClose}
+          onEdit={handleEdit}
+          currentBilling={currentBilling}
         />
 
         <Card style={styles.card}>
@@ -143,7 +169,7 @@ const Billing = () => {
                               <Typography>
                                 {billing.amount} 円 ({billing.note})
                           </Typography>
-                              - {billing.game_name}
+                              - {billing.game.name}
                             </React.Fragment>
                           }
                           secondary={formatDate(billing)}
@@ -152,7 +178,8 @@ const Billing = () => {
                         <ListItemSecondaryAction>
                           <IconButton
                             aria-label="Edit"
-                            onClick={() => handleClickOpen(billing)}
+                            onClick={() => handleEditOpen(billing)}
+                            onClose={() => setCurrentBilling(undefined)}
                           >
                             <EditIcon />
                           </IconButton>
@@ -176,7 +203,8 @@ const Billing = () => {
           size="medium"
           color="secondary"
           aria-label="Add"
-          onClick={handleClickOpen}
+          onClick={handleCreateOpen}
+          onClose={() => setCurrentBilling(undefined)}
           style={styles.add}
         >
           <AddIcon />

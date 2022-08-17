@@ -36,6 +36,11 @@ class ApiClient {
     return await this.callApi('/billings', 'POST', params);
   }
 
+  async updateBilling(id, params) {
+
+    return await this.callApi(`/billings/${id}`, 'PUT', params);
+  }
+
   async deleteBilling(id) {
     return await this.callApi(`/billings/${id}`, 'DELETE');
   }
